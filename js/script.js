@@ -9,6 +9,7 @@
   const modalBackdrop = document.getElementById("modalBackdrop");
   const modalCard = document.querySelector(".modal");
   const modalMedia = document.querySelector(".modal__media");
+  const modalSide = document.querySelector(".modal__side");
   const modalImg = document.getElementById("modalImg");
   const modalDots = document.getElementById("modalDots");
   const modalTitle = document.getElementById("modalTitle");
@@ -100,15 +101,17 @@
     if (e.key === "ArrowRight") showSlide(1);
   });
 
-  // Gestos táctiles tipo Instagram: swipe horizontal cambia de foto,
-  // swipe hacia abajo cierra el post (con feedback de arrastre en vivo).
+  // Gestos táctiles tipo Instagram: swipe horizontal sobre la foto cambia
+  // de slide; swipe hacia abajo desde cualquier parte del post arrastra
+  // TODA la tarjeta (foto + texto) y la cierra, como en IG.
   let touchStartX = 0;
   let touchStartY = 0;
   let touchDeltaX = 0;
   let touchDeltaY = 0;
   let dragging = false;
+  let dragMode = null; // "slide" | "close" | "ignore"
 
-  modalMedia.addEventListener(
+  modalCard.addEventListener(
     "touchstart",
     (e) => {
       if (e.touches.length !== 1) return;
@@ -117,24 +120,38 @@
       touchDeltaX = 0;
       touchDeltaY = 0;
       dragging = true;
+      dragMode = null;
       modalCard.style.transition = "none";
     },
     { passive: true }
   );
 
-  modalMedia.addEventListener(
+  modalCard.addEventListener(
     "touchmove",
     (e) => {
       if (!dragging || e.touches.length !== 1) return;
       touchDeltaX = e.touches[0].clientX - touchStartX;
       touchDeltaY = e.touches[0].clientY - touchStartY;
 
-      const verticalDrag = touchDeltaY > 0 && Math.abs(touchDeltaY) > Math.abs(touchDeltaX);
-      if (verticalDrag) {
+      if (dragMode === null && (Math.abs(touchDeltaX) > 8 || Math.abs(touchDeltaY) > 8)) {
+        const overMedia = modalMedia.contains(e.target);
+        const sideAtTop = !overMedia && modalSide.scrollTop <= 0;
+        const isMostlyVertical = Math.abs(touchDeltaY) > Math.abs(touchDeltaX);
+
+        if (isMostlyVertical && touchDeltaY > 0 && (overMedia || sideAtTop)) {
+          dragMode = "close";
+        } else if (!isMostlyVertical && overMedia) {
+          dragMode = "slide";
+        } else {
+          dragMode = "ignore";
+        }
+      }
+
+      if (dragMode === "close") {
         e.preventDefault();
         modalCard.style.transform = `translateY(${touchDeltaY}px)`;
         modalCard.style.opacity = String(Math.max(1 - touchDeltaY / 400, 0.4));
-      } else if (Math.abs(touchDeltaX) > 8) {
+      } else if (dragMode === "slide") {
         e.preventDefault();
       }
     },
@@ -146,22 +163,22 @@
     dragging = false;
     modalCard.style.transition = "";
 
-    const horizontal = Math.abs(touchDeltaX) > Math.abs(touchDeltaY);
     const SWIPE_THRESHOLD = 50;
     const CLOSE_THRESHOLD = 110;
 
-    if (horizontal && Math.abs(touchDeltaX) > SWIPE_THRESHOLD) {
+    if (dragMode === "slide" && Math.abs(touchDeltaX) > SWIPE_THRESHOLD) {
       showSlide(touchDeltaX < 0 ? 1 : -1);
-    } else if (!horizontal && touchDeltaY > CLOSE_THRESHOLD) {
+    } else if (dragMode === "close" && touchDeltaY > CLOSE_THRESHOLD) {
       closeModal();
     }
 
     modalCard.style.transform = "";
     modalCard.style.opacity = "";
+    dragMode = null;
   }
 
-  modalMedia.addEventListener("touchend", endDrag);
-  modalMedia.addEventListener("touchcancel", endDrag);
+  modalCard.addEventListener("touchend", endDrag);
+  modalCard.addEventListener("touchcancel", endDrag);
 
   render();
 })();

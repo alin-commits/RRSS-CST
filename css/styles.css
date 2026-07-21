@@ -299,10 +299,6 @@ body {
     flex: 1;
   }
 
-  .modal__nav {
-    display: none;
-  }
-
   .modal__dots {
     top: 10px;
     bottom: auto;
