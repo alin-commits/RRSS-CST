@@ -12,6 +12,16 @@
   const modalTitle = document.getElementById("modalTitle");
   const modalCaption = document.getElementById("modalCaption");
 
+  function formatCaption(text) {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/\n/g, "<br>");
+  }
+
   function render() {
     grid.innerHTML = "";
     posts.forEach((post) => {
@@ -49,7 +59,7 @@
     modalImg.src = `${modalPost.folder}/${modalPost.images[modalIndex]}`;
     modalImg.alt = modalPost.title;
     modalTitle.textContent = modalPost.title;
-    modalCaption.textContent = modalPost.caption;
+    modalCaption.innerHTML = formatCaption(modalPost.caption);
 
     modalDots.innerHTML = "";
     if (modalPost.images.length > 1) {
