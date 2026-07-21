@@ -81,7 +81,7 @@ body {
 
 .card {
   position: relative;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
   cursor: pointer;
   background: var(--surface);
@@ -271,7 +271,7 @@ body {
   }
 
   .modal__media {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 4 / 5;
     flex: none;
   }
 
