@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CST Ibérica — Revisión de posts RRSS</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%B8%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="header__avatar">🔧</div>
+      <div>
+        <h1 class="header__title">CST Ibérica · Parrilla RRSS</h1>
+        <p class="header__subtitle">Revisa y aprueba los posts propuestos — clic en cualquiera para verlo completo</p>
+      </div>
+      <div class="header__stats">
+        <div><strong id="statPending">0</strong>Pendientes</div>
+        <div><strong id="statApproved">0</strong>Aprobados</div>
+        <div><strong id="statRejected">0</strong>Rechazados</div>
+      </div>
+    </header>
+
+    <div id="demoBanner" class="demo-banner" hidden>
+      ⚠️ <strong>Modo demo local:</strong> Supabase no está configurado todavía, así que Aprobar/Rechazar solo se guarda en este navegador.
+      Para que el estado se comparta entre tu móvil/PC y el de tu encargado, configura
+      <code>js/supabase-config.js</code> con tu proyecto (ver <code>README.md</code>).
+    </div>
+
+    <div class="filters">
+      <button class="filter-btn active" data-filter="todos">Todos</button>
+      <button class="filter-btn" data-filter="pendiente">Pendientes</button>
+      <button class="filter-btn" data-filter="aprobado">Aprobados</button>
+      <button class="filter-btn" data-filter="rechazado">Rechazados</button>
+    </div>
+
+    <div id="grid" class="grid"></div>
+    <div id="emptyState" class="empty-state" hidden>No hay posts en este filtro.</div>
+  </div>
+
+  <div id="modalBackdrop" class="modal-backdrop" hidden>
+    <div class="modal">
+      <button id="modalCloseBtn" class="modal__close">✕</button>
+      <div class="modal__media">
+        <button id="modalPrevBtn" class="modal__nav modal__nav--prev">‹</button>
+        <img id="modalImg" alt="" />
+        <button id="modalNextBtn" class="modal__nav modal__nav--next">›</button>
+        <div id="modalDots" class="modal__dots"></div>
+      </div>
+      <div class="modal__side">
+        <h2 id="modalTitle" class="modal__title"></h2>
+        <div id="modalStatusRow" class="modal__status-row"></div>
+        <p id="modalCaption" class="modal__caption"></p>
+        <p id="modalNote" class="modal__note" hidden></p>
+
+        <div class="modal__actions">
+          <button id="btnApprove" class="btn btn--approve">✓ Aprobar</button>
+          <button id="btnReject" class="btn btn--reject">✕ Rechazar</button>
+
+          <div id="rejectNoteBox" class="reject-note">
+            <textarea id="rejectNoteText" placeholder="¿Por qué lo rechazas? (opcional, se lo lleva Alin)"></textarea>
+            <div class="reject-note__actions">
+              <button id="btnCancelReject" class="btn btn--ghost">Cancelar</button>
+              <button id="btnConfirmReject" class="btn btn--reject">Confirmar rechazo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/data.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
