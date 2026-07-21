@@ -160,6 +160,8 @@ body {
   display: flex;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  will-change: transform;
 }
 
 .modal__media {
@@ -170,6 +172,7 @@ body {
   align-items: center;
   justify-content: center;
   min-width: 0;
+  touch-action: none;
 }
 
 .modal__media img {
@@ -294,5 +297,14 @@ body {
   .modal__side {
     max-width: none;
     flex: 1;
+  }
+
+  .modal__nav {
+    display: none;
+  }
+
+  .modal__dots {
+    top: 10px;
+    bottom: auto;
   }
 }

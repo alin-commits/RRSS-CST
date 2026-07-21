@@ -7,6 +7,8 @@
   const grid = document.getElementById("grid");
 
   const modalBackdrop = document.getElementById("modalBackdrop");
+  const modalCard = document.querySelector(".modal");
+  const modalMedia = document.querySelector(".modal__media");
   const modalImg = document.getElementById("modalImg");
   const modalDots = document.getElementById("modalDots");
   const modalTitle = document.getElementById("modalTitle");
@@ -97,6 +99,69 @@
     if (e.key === "ArrowLeft") showSlide(-1);
     if (e.key === "ArrowRight") showSlide(1);
   });
+
+  // Gestos táctiles tipo Instagram: swipe horizontal cambia de foto,
+  // swipe hacia abajo cierra el post (con feedback de arrastre en vivo).
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchDeltaX = 0;
+  let touchDeltaY = 0;
+  let dragging = false;
+
+  modalMedia.addEventListener(
+    "touchstart",
+    (e) => {
+      if (e.touches.length !== 1) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchDeltaX = 0;
+      touchDeltaY = 0;
+      dragging = true;
+      modalCard.style.transition = "none";
+    },
+    { passive: true }
+  );
+
+  modalMedia.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!dragging || e.touches.length !== 1) return;
+      touchDeltaX = e.touches[0].clientX - touchStartX;
+      touchDeltaY = e.touches[0].clientY - touchStartY;
+
+      const verticalDrag = touchDeltaY > 0 && Math.abs(touchDeltaY) > Math.abs(touchDeltaX);
+      if (verticalDrag) {
+        e.preventDefault();
+        modalCard.style.transform = `translateY(${touchDeltaY}px)`;
+        modalCard.style.opacity = String(Math.max(1 - touchDeltaY / 400, 0.4));
+      } else if (Math.abs(touchDeltaX) > 8) {
+        e.preventDefault();
+      }
+    },
+    { passive: false }
+  );
+
+  function endDrag() {
+    if (!dragging) return;
+    dragging = false;
+    modalCard.style.transition = "";
+
+    const horizontal = Math.abs(touchDeltaX) > Math.abs(touchDeltaY);
+    const SWIPE_THRESHOLD = 50;
+    const CLOSE_THRESHOLD = 110;
+
+    if (horizontal && Math.abs(touchDeltaX) > SWIPE_THRESHOLD) {
+      showSlide(touchDeltaX < 0 ? 1 : -1);
+    } else if (!horizontal && touchDeltaY > CLOSE_THRESHOLD) {
+      closeModal();
+    }
+
+    modalCard.style.transform = "";
+    modalCard.style.opacity = "";
+  }
+
+  modalMedia.addEventListener("touchend", endDrag);
+  modalMedia.addEventListener("touchcancel", endDrag);
 
   render();
 })();
